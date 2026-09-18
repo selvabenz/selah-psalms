@@ -1,0 +1,917 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:selah:annotation:0.4.0",
+  "title": "Selah local TAHOT pilot annotations v0.4.0",
+  "description": "Explicit local extension of the supplied v0.3 schema: source edition, completion, verse decisions, alphabetic stanza labels and isolated performance markers. The original schema is preserved. Approval is independent of technical completeness.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "book",
+    "psalm",
+    "revision",
+    "psalmStatus",
+    "segments",
+    "parallelGroups",
+    "components",
+    "structures",
+    "notes",
+    "validation"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "0.4.0"
+    },
+    "book": {
+      "const": "PSA"
+    },
+    "psalm": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 150
+    },
+    "revision": {
+      "type": "object",
+      "description": "Exact sources this file was created against. A change in any hash makes token-anchored records STALE (PASA §33).",
+      "required": [
+        "hebrew",
+        "tamil",
+        "english",
+        "analysisRunId"
+      ],
+      "properties": {
+        "hebrew": {
+          "type": "object",
+          "required": [
+            "version"
+          ],
+          "properties": {
+            "version": {
+              "type": "string"
+            },
+            "archiveSha256": {
+              "type": "string"
+            }
+          }
+        },
+        "tamil": {
+          "type": "object",
+          "required": [
+            "sha256"
+          ],
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "sha256": {
+              "type": "string"
+            }
+          }
+        },
+        "english": {
+          "type": "object",
+          "required": [
+            "sha256"
+          ],
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "sha256": {
+              "type": "string"
+            }
+          }
+        },
+        "analysisRunId": {
+          "type": "string"
+        }
+      }
+    },
+    "psalmStatus": {
+      "enum": [
+        "not-started",
+        "in-progress",
+        "disputed",
+        "approved"
+      ],
+      "description": "Roll-up only; derived from record statuses, never the source of truth."
+    },
+    "segments": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/segment"
+      }
+    },
+    "parallelGroups": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/parallelGroup"
+      }
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/component"
+      }
+    },
+    "structures": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/structure"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/note"
+      }
+    },
+    "validation": {
+      "$ref": "#/$defs/validation"
+    },
+    "migration": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "fromVersion": {
+          "type": "string"
+        },
+        "importedAt": {
+          "type": "string"
+        },
+        "sourceSha256": {
+          "type": "string"
+        },
+        "report": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "kind",
+              "text"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "ok",
+                  "warn",
+                  "repair",
+                  "flag"
+                ]
+              },
+              "text": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer"
+              },
+              "ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "completion": {
+      "enum": [
+        "IN_PROGRESS",
+        "CLOSE_READ"
+      ]
+    },
+    "sourceEdition": {
+      "type": "object"
+    },
+    "analysisMode": {
+      "type": "string"
+    },
+    "rolloutMethod": {
+      "type": "string"
+    },
+    "verseAnalyses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "verse",
+          "decision",
+          "explanation",
+          "segmentIds",
+          "status"
+        ],
+        "properties": {
+          "verse": {
+            "type": "integer"
+          },
+          "decision": {
+            "enum": [
+              "PARALLELISM_PROPOSED",
+              "NO_LOCAL_PARALLELISM_PROPOSED"
+            ]
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 20
+          },
+          "segmentIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/segmentId"
+            }
+          },
+          "status": {
+            "$ref": "#/$defs/reviewStatus"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "hebrewTokenId": {
+      "type": "string",
+      "pattern": "^PSA\\.[0-9]{1,3}\\.(front|[0-9]{1,3})\\.H[0-9]{3}$"
+    },
+    "tamilTokenId": {
+      "type": "string",
+      "pattern": "^PSA\\.[0-9]{1,3}\\.(d[0-9]*|[0-9]{1,3})\\.T[0-9]{3}$"
+    },
+    "segmentId": {
+      "type": "string",
+      "pattern": "^PSA\\.[0-9]{1,3}\\.(front|[0-9]{1,3})\\.L[0-9]{1,2}$"
+    },
+    "groupId": {
+      "type": "string",
+      "pattern": "^P[0-9]{3}$"
+    },
+    "componentId": {
+      "type": "string",
+      "pattern": "^C[0-9]{3}$"
+    },
+    "structureId": {
+      "type": "string",
+      "pattern": "^(S|CH|AC|RF|IN)[0-9]{3}$"
+    },
+    "noteId": {
+      "type": "string",
+      "pattern": "^N[0-9]{3}$"
+    },
+    "reviewStatus": {
+      "description": "PASA §20 / decision D1 — who has looked at it and what they decided.",
+      "enum": [
+        "UNREVIEWED",
+        "AI_PROPOSED",
+        "HUMAN_APPROVED",
+        "HUMAN_REJECTED",
+        "HUMAN_MODIFIED",
+        "NEEDS_DISCUSSION"
+      ]
+    },
+    "confidence": {
+      "description": "HIGH/MEDIUM/LOW from Psalms Editor v0.2; display synonyms Confirmed/Probable/Possible. Disputed is a review state (NEEDS_DISCUSSION), not a confidence level.",
+      "enum": [
+        "HIGH",
+        "MEDIUM",
+        "LOW"
+      ]
+    },
+    "parallelismType": {
+      "description": "Canonical codes; labels carry the Psalms Editor v0.2 wording which already unifies the Logos five as aliases. Extended 2026-09-17 (Selah master prompt v2 adoption, D17) with three more of Berlin's ABD-surveyed types (Appendix A) that the original nine didn't name explicitly: STAIRCASE (Berlin's own term for the repeat-then-complete pattern; CLIMACTIC is kept as a distinct value for build-of-intensity readings that aren't a verbatim-repeat staircase -- a human may treat them as the same phenomenon on a given verse, but the schema doesn't collapse them), CHIASTIC (line-internal AB//BA reversal -- distinct from the macro-structure CHIASM in structureType, though the same word covers both in the literature), and JANUS (a single word doing double duty with what precedes and what follows).",
+      "enum": [
+        "SYNONYMOUS",
+        "ANTITHETIC",
+        "SYNTHETIC",
+        "CLIMACTIC",
+        "STAIRCASE",
+        "EMBLEMATIC",
+        "CHIASTIC",
+        "JANUS",
+        "CONSEQUENTIAL",
+        "REPETITION",
+        "OTHER",
+        "UNCERTAIN"
+      ]
+    },
+    "transformationType": {
+      "description": "Selah master prompt v2 (D17): how the second (or later) colon of a parallelGroup relates to the first, independent of its overall classification -- a Synonymous pair can restate or expand; a Synthetic sequence can complete or intensify. Multiple may apply.",
+      "enum": [
+        "restatement",
+        "expansion",
+        "specification",
+        "contrast",
+        "reversal",
+        "completion",
+        "intensification",
+        "consequence",
+        "other"
+      ]
+    },
+    "parallelismAspect": {
+      "description": "Berlin's four-part linguistic model (Appendix A / ABD 1992), building on Jakobson -- a single parallelGroup can activate more than one aspect at once; this is deliberately not a single-choice field.",
+      "enum": [
+        "grammatical",
+        "lexical",
+        "semantic",
+        "phonological"
+      ]
+    },
+    "structureType": {
+      "enum": [
+        "SECTION",
+        "SUBSECTION",
+        "STROPHE",
+        "STANZA",
+        "REFRAIN",
+        "INCLUSIO",
+        "CHIASM",
+        "ACROSTIC",
+        "CONTRAST",
+        "COMPARISON",
+        "REPETITION",
+        "SPEAKER_CHANGE",
+        "ADDRESSEE_CHANGE",
+        "PROGRESSION",
+        "OTHER"
+      ]
+    },
+    "unitType": {
+      "enum": [
+        "colon",
+        "line",
+        "superscription",
+        "heading",
+        "performance-marker"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "origin"
+      ],
+      "properties": {
+        "origin": {
+          "enum": [
+            "human",
+            "machine",
+            "migration",
+            "documented-alternative",
+            "ai-literature-synthesis",
+            "ai-original-analysis"
+          ],
+          "description": "Extended 2026-09-17 (D17) with the two AI-origin values already used in psalm-metadata.v0.1 (D11), plus one new one this layer specifically needs. 'ai-literature-synthesis' = reading and synthesizing published scholarship (e.g. applying Berlin's typology). 'ai-original-analysis' = Claude's own close reading of the Hebrew/target text with no named scholar's per-item analysis to cite (e.g. the word/phrase-level component tagging itself) -- flagged as an open gap in D14 and resolved here. Neither may be presented or exported as human-equivalent."
+        },
+        "method": {
+          "type": "string",
+          "description": "e.g. accent-rule, lemma-repeat, acrostic-scan, alignment-projection, psalms-editor-v0.2"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "kind",
+              "text"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "tokenIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "source": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "sourceReference": {
+          "type": "string",
+          "description": "Scholarly or project source (e.g. 'Selah master prompt §15', 'Bratcher & Reyburn')"
+        }
+      }
+    },
+    "revisionEntry": {
+      "type": "object",
+      "required": [
+        "revision",
+        "at",
+        "change"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer"
+        },
+        "at": {
+          "type": "string"
+        },
+        "change": {
+          "type": "string"
+        },
+        "by": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/reviewStatus"
+        },
+        "snapshot": {
+          "type": "object"
+        }
+      }
+    },
+    "recordBase": {
+      "type": "object",
+      "required": [
+        "status",
+        "provenance",
+        "revision",
+        "revisions",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/reviewStatus"
+        },
+        "legacyStatus": {
+          "type": "string",
+          "description": "Psalms Editor v0.2 status kept verbatim for reversibility."
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "note": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/revisionEntry"
+          }
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      }
+    },
+    "projection": {
+      "type": "object",
+      "description": "Target-language realisation of a Hebrew span, obtained through alignment (D9). Never authoritative for analysis.",
+      "required": [
+        "tokenIds",
+        "method",
+        "status"
+      ],
+      "properties": {
+        "tokenIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string",
+          "description": "Display cache built from tokenIds in target order."
+        },
+        "method": {
+          "enum": [
+            "human",
+            "alignment-projection",
+            "migration"
+          ]
+        },
+        "status": {
+          "$ref": "#/$defs/reviewStatus"
+        },
+        "coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "precision": {
+          "enum": [
+            "TOKEN_EXACT",
+            "SHARED_LEXICAL_GROUP"
+          ]
+        },
+        "lifecycle": {
+          "enum": [
+            "ACTIVE",
+            "STALE"
+          ]
+        }
+      }
+    },
+    "segment": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/recordBase"
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "verse",
+            "lineIndex",
+            "unitType",
+            "hebrewTokenIds"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/segmentId"
+            },
+            "verse": {
+              "type": "string"
+            },
+            "lineIndex": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "unitType": {
+              "$ref": "#/$defs/unitType"
+            },
+            "hebrewTokenIds": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/hebrewTokenId"
+              }
+            },
+            "tamil": {
+              "$ref": "#/$defs/projection"
+            },
+            "english": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "method": {
+                  "type": "string"
+                }
+              }
+            },
+            "alternativeOf": {
+              "$ref": "#/$defs/segmentId",
+              "description": "Set when this is a machine alternative to an existing human segment."
+            }
+          }
+        }
+      ]
+    },
+    "parallelGroup": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/recordBase"
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "lineIds",
+            "type"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/groupId"
+            },
+            "lineIds": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "$ref": "#/$defs/segmentId"
+              },
+              "description": "The cola participating in this relationship, in reading order. This IS the master prompt's cola[] -- a segment (unitType colon) already anchors its own hebrewTokenIds, so no separate cola array is needed alongside it."
+            },
+            "type": {
+              "$ref": "#/$defs/parallelismType"
+            },
+            "suggestedType": {
+              "$ref": "#/$defs/parallelismType",
+              "description": "Machine hint; never copied into type without a human."
+            },
+            "transformation": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/transformationType"
+              },
+              "description": "Selah master prompt v2 (D17). How later cola relate to the first; independent of type (e.g. a SYNTHETIC group's transformation is usually consequence/completion, not restatement)."
+            },
+            "aspects": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/parallelismAspect"
+              },
+              "description": "Selah master prompt v2 (D17) / Berlin's four-part model (Appendix A). Optional, multi-valued -- a pair can be grammatically AND semantically parallel at once."
+            },
+            "poeticEffect": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Selah master prompt v2 (D17). Short free-text tags for what the parallelism accomplishes rhetorically (e.g. 'intensifies the plea', 'universalizes the audience'), not a restatement of the classification."
+            },
+            "explanation": {
+              "type": "string",
+              "description": "Selah master prompt v2 (D17). REQUIRED to be pedagogical, not a bare classification word: what corresponds, what changes, why it matters. Enforced by convention (build/review tooling), not the JSON schema, since UNCERTAIN/machine-only groups legitimately have none yet."
+            }
+          }
+        }
+      ]
+    },
+    "component": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/recordBase"
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "label",
+            "parallelGroupId",
+            "hebrewTokenIds"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/componentId"
+            },
+            "label": {
+              "enum": [
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "i"
+              ],
+              "description": "Extended from a-e to a-i 2026-09-17 (D17). IMPORTANT: a repeated label across cola of the SAME parallelGroup is an asserted correspondence claim (the whole point of the letter -- see the master prompt's component-identity principle) and must never be reused just because a clause happens to be third-in-line. Where cola genuinely do not correspond one-to-one (e.g. a SYNTHETIC tricolon that argues rather than restates), give each colon its own disjoint slice of the alphabet (a/b/c, then d/e/f, then g/h/i) rather than reusing a/b/c and implying a correspondence that isn't there -- this is exactly the bug D17's Psalm 67 migration found and fixed in the v.4 D-E-D triad."
+            },
+            "parallelGroupId": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/groupId"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "null is permitted only for migrated legacy data and is always a validation issue (COMPONENT_UNATTACHED)."
+            },
+            "hebrewTokenIds": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/hebrewTokenId"
+              }
+            },
+            "tamil": {
+              "$ref": "#/$defs/projection"
+            },
+            "semanticFunction": {
+              "type": "string"
+            },
+            "english": {
+              "$ref": "#/$defs/projection"
+            }
+          }
+        }
+      ]
+    },
+    "structure": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/recordBase"
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "type",
+            "startLineId",
+            "endLineId",
+            "parentId"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/structureId"
+            },
+            "type": {
+              "$ref": "#/$defs/structureType"
+            },
+            "label": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "A, B, C, C′, B′, A′ … Use primes for the mirrored member (Editor prompt §19)."
+            },
+            "title": {
+              "type": "string"
+            },
+            "startLineId": {
+              "$ref": "#/$defs/segmentId"
+            },
+            "endLineId": {
+              "$ref": "#/$defs/segmentId"
+            },
+            "parentId": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/structureId"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "correspondences": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "with",
+                  "relation"
+                ],
+                "properties": {
+                  "with": {
+                    "$ref": "#/$defs/structureId"
+                  },
+                  "relation": {
+                    "enum": [
+                      "mirror",
+                      "repeat",
+                      "contrast",
+                      "frame"
+                    ]
+                  }
+                }
+              }
+            },
+            "role": {
+              "enum": [
+                "primary",
+                "secondary",
+                "alternative"
+              ],
+              "description": "Selah master prompt §22: primary and secondary structures may coexist."
+            },
+            "legacyId": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "note": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/recordBase"
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "kind",
+            "targetIds",
+            "text"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/noteId"
+            },
+            "kind": {
+              "enum": [
+                "scholarly",
+                "structure",
+                "translation-significance",
+                "tamil-observation",
+                "reviewer",
+                "source-reference",
+                "migration"
+              ]
+            },
+            "targetIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "validation": {
+      "type": "object",
+      "required": [
+        "runAt",
+        "issues"
+      ],
+      "properties": {
+        "runAt": {
+          "type": "string"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "entityType",
+              "entityId",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "enum": [
+                  "SEGMENT_TOKEN_UNCOVERED",
+                  "SEGMENT_TOKEN_DUPLICATE",
+                  "SEGMENT_INVALID_TOKEN",
+                  "SEGMENT_ACCENT_MISMATCH",
+                  "GROUP_LINE_IN_MULTIPLE_GROUPS",
+                  "GROUP_SPANS_VERSES",
+                  "GROUP_INCOMPLETE",
+                  "COMPONENT_UNATTACHED",
+                  "COMPONENT_DUPLICATE",
+                  "COMPONENT_CONFLICT",
+                  "COMPONENT_INVALID_TOKEN",
+                  "COMPONENT_OUTSIDE_GROUP_LINES",
+                  "STRUCTURE_INVALID_RANGE",
+                  "STRUCTURE_ORPHAN_CHILD",
+                  "STRUCTURE_CHIASM_WITHOUT_PARENT",
+                  "STRUCTURE_CORRESPONDENCE_ASYMMETRIC",
+                  "STATUS_STALE_APPROVAL",
+                  "ID_DUPLICATE",
+                  "SOURCE_MISMATCH"
+                ]
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning",
+                  "info"
+                ]
+              },
+              "entityType": {
+                "enum": [
+                  "segment",
+                  "parallelGroup",
+                  "component",
+                  "structure",
+                  "note",
+                  "file"
+                ]
+              },
+              "entityId": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "scholarly": {
+                "type": "boolean",
+                "description": "true = a judgment call for a human; false = technical defect."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

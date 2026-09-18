@@ -1,0 +1,25 @@
+{
+  "runAt": "2026-09-18T09:23:45.522463+00:00",
+  "counts": {
+    "localSnapshotsVerified": 33,
+    "originalFilesVerified": 29,
+    "psalms": 150,
+    "heTokens": 19595,
+    "taTokens": 25686,
+    "enTokens": 42221,
+    "semanticUnits": 17669,
+    "staleSemanticUnits": 2462,
+    "closeReadPsalms": 150,
+    "segments": 4939,
+    "parallelGroups": 2326,
+    "components": 7179,
+    "structures": 1129,
+    "notes": 267,
+    "sharedComponentCarriers": 843
+  },
+  "errors": [],
+  "warnings": [
+    "Technical integrity does not establish correctness of linguistic or literary judgments. All 150 close-reading drafts require scholarly review.",
+    "Eight pilot Psalms received individually authored close reading. The remaining 142 are conservative systematic Hebrew review drafts and should be reviewed in batches."
+  ]
+}

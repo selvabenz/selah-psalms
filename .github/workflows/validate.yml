@@ -1,0 +1,19 @@
+name: Validate Selah bundle
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Validate packaged reader
+        run: python scripts/validate_bundle.py
